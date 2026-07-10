@@ -1,0 +1,8 @@
+# include<stdio.h>
+#include<unistd.h>
+int main(){
+     print("current process ID:
+%d\n",grtID());
+    return 0;
+}
+        
