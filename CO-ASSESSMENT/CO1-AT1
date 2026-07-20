@@ -1,0 +1,151 @@
+1. (a) Identify the type of Operating System suitable for this environment and justify your answer. (4 Marks)
+Answer:
+The suitable operating system is a Multi-user Time-Sharing Operating System.
+Justification:
+1. It allows multiple users to access the same computer simultaneously.
+2. CPU time is shared among users using time slicing.
+3. Each user feels they have a dedicated system.
+Examples: Linux, UNIX.
+
+(b) State any two responsibilities of the kernel in managing multiple user processes. (2 Marks)
+Process Scheduling – Allocates CPU time among processes.
+Memory Management – Allocates and deallocates memory for each process.
+
+(C) PROGRAM:
+#include <stdio.h>
+#include <unistd.h>
+
+int main()
+{
+    pid_t pid;
+
+    pid = fork();
+
+    if(pid == 0)
+    {
+        printf("Child Process\n");
+        printf("Child PID = %d\n", getpid());
+        printf("Parent PID = %d\n", getppid());
+    }
+    else
+    {
+        printf("Parent Process\n");
+        printf("Parent PID = %d\n", getpid());
+    }
+
+    return 0;
+}
+
+2. (a) System calls required
+* creat() or open()
+* write()
+* read()
+* close()
+
+(b) Explain any two system calls
+* Opens an existing file or creates a new file.
+write()
+* Writes data from memory into a file.
+
+(C) .PROGRAM:
+#include <fcntl.h>
+#include <unistd.h>
+
+int main()
+{
+    int fd;
+
+    fd = creat("student.txt", 0644);
+
+    write(fd, "Varsha\n", 7);
+
+    close(fd);
+
+    return 0;
+}
+
+3 (a).System calls required 
+* open()
+* read()
+* write()
+* close()
+
+(b) Explain any two 
+read()
+* Reads data from a file into memory.
+write()
+* Writes data from memory into a file.
+
+(c).PROGRAM:
+#include <fcntl.h>
+#include <unistd.h>
+int main()
+{
+    int source, destination;
+    char buffer[100];
+    int n;
+
+    source = open("source.txt", O_RDONLY);
+    destination = creat("destination.txt", 0644);
+
+    while((n = read(source, buffer, 100)) > 0)
+    {
+        write(destination, buffer, n);
+    }
+    close(source);
+    close(destination);
+    return 0;
+}
+
+4.(a)Purpose of fork() and exec() 
+fork()
+* Creates a new child process.
+exec()
+* Replaces the current process with another program.
+
+(b) Role of wait() 
+Makes the parent process wait until the child process finishes execution.
+
+(c).PROGRAM:
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main()
+{
+    if(fork() == 0)
+    {
+        execl("/bin/ls","ls",NULL);
+    }
+    else
+    {
+        wait(NULL);
+        printf("Child process completed.\n");
+    }
+    return 0;
+}
+5.(A)Importance of File Management
+File management is responsible for:
+* Organizing files on storage devices.
+* Creating, deleting and updating files.
+* Providing secure access to files.
+* Efficiently managing storage space.
+(b) Purpose of open() and close() 
+open():
+* Opens a file and returns its file descriptor.
+close():
+* Closes the opened file and releases system resources.
+(c).PROGRAM:
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+int main()
+{
+    int fd;
+    char buffer[100];
+    fd = open("student.txt", O_RDONLY);
+    read(fd, buffer, sizeof(buffer));
+    printf("%s", buffer);
+    close(fd);
+    return 0;
+}
