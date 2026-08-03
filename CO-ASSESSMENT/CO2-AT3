@@ -1,0 +1,121 @@
+1.DEADLOCK DEBUGGING:
+Exact condition causing deadlock:
+ * P1 locks R1 and waits for R2.
+ * P2 locks R2 and waits for R1.
+Therefore:
+ * P1 → holds R1, waits for R2.
+ * P2 → holds R2, waits for R1.
+
+This creates a circular wait:
+  P1 → R2 → P2 → R1 → P1
+
+The four Coffman conditions are satisfied:
+  1.Mutual exclusion
+  2.Hold and wait
+  3.No preemption
+  4.Circular wait
+
+Optimization: Use a fixed lock ordering for both processes.
+For example, 
+always acquire R1 first, then R2:
+
+P1: lock(R1)
+    lock(R2)
+    critical section
+    unlock(R2)
+    unlock(R1)
+
+P2: lock(R1)
+    lock(R2)
+    critical section
+    unlock(R2)
+    unlock(R1)
+
+2.CPU UTILIZATION PROBLEM:
+Problem identified:
+The repeated transitions
+Ready → Waiting → Ready → Waiting
+* show that processes are frequently blocking for I/O or synchronization events instead of using the CPU.
+* Although processes are ready, the CPU utilization is only 30%, indicating that the CPU spends significant time idle or processes are being unnecessarily blocked.
+
+Possible causes:
+* Excessive I/O operations
+* Frequent synchronization/blocking
+* Short CPU bursts
+* Inefficient scheduling or excessive waiting
+
+Optimization:
+1. Reduce unnecessary I/O and blocking
+Use buffering and batch I/O operations.
+Reduce the number of frequent I/O requests.
+2. Improve scheduling
+Use an appropriate scheduling algorithm and tune the time quantum.
+Keep more CPU-bound work available when I/O-bound processes are waiting.
+  
+3.MEMORY BOTTLENECK DEBUGGING:
+Memory calculation:
+* Code = 5 MB
+* Heap = 150 MB
+* Stack = 1 MB × 25 threads = 25 MB
+ Total approximate memory:
+  5 + 150 + 25 = 180 MB
+Physical RAM = 2 GB ≈ 2048 MB
+So, the stated memory usage is much smaller than physical RAM.
+Issue:
+* The page faults are therefore not explained simply by insufficient total RAM.
+* The likely problem is poor memory locality / working-set behavior in the multithreaded program.
+* Threads may access many different memory pages, causing pages to be repeatedly loaded into memory, resulting in frequent page faults.
+Two optimizations:
+* Improve memory locality.
+* Reduce unnecessary memory usage/access.
+  
+4.STARVATION DEBUGGING:
+Root cause:
+P5 belongs to Q3 (Batch), which has the lowest priority.
+The scheduler prioritizes:
+  Q1 Interactive > Q2 System > Q3 Batch
+If Q1 and Q2 continuously contain processes, the scheduler repeatedly executes them before reaching Q3.
+Therefore, P5 can remain in the ready queue indefinitely. This is called starvation or indefinite postponement.
+Optimization: Aging Use aging With aging, the priority of a process increases gradually while it waits.
+For example:
+P5 waits for a long time
+        ↓
+Priority gradually increases
+        ↓
+P5 moves toward Q2/Q1
+        ↓
+P5 gets CPU time
+
+5.CONTEXT-SWITCH OVERHEAD DEBUGGING:
+  Given:
+       Context switches = 20,000/sec
+       Average CPU burst = 2 ms
+       I/O wait frequency = very high
+       Time quantum = 1 ms
+
+The time quantum is only 1 ms, while the average CPU burst is 2 ms.
+Therefore, many processes are preempted before completing their CPU burst.
+Also, frequent I/O causes processes to move between:
+   Running → Waiting → Ready → Running
+
+This produces additional context switches.
+Optimizations
+  1. Increase the time quantum
+Increase the quantum from 1 ms to a more suitable value, such as 2–4 ms, depending on workload.
+This allows processes to complete more of their CPU burst before being preempted.
+  2. Reduce unnecessary I/O blocking
+Use:
+1.I/O buffering
+2.Batch I/O
+3.Asynchronous I/O where appropriate
+4.This reduces frequent transitions between running and waiting states.
+Result:
+Fewer context switches → less scheduler overhead → more CPU time available for actual application work → improved server performance.
+
+
+
+
+
+
+
+
