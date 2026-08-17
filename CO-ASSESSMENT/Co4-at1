@@ -1,0 +1,190 @@
+1st question :
+Contiguous, Linked and Indexed File Allocation
+#include <stdio.h>
+int main()
+{
+ int n, size, choice, i, j, found = 0;
+ int disk[100] = {0};
+ printf("Enter disk size: ");
+ scanf("%d", &n);
+ printf("Enter file size: ");
+ scanf("%d", &size);
+ printf("1. Contiguous\n2. Linked\n3. Indexed\n");
+ printf("Enter choice: ");
+ scanf("%d", &choice);
+ if (choice == 1)
+ {
+ for (i = 0; i <= n - size; i++)
+ {
+ found = 1;
+ for (j = i; j < i + size; j++)
+ {
+ if (disk[j] == 1)
+ found = 0;
+ }
+ if (found)
+ {
+ printf("Allocated blocks: ");
+for (j = i; j < i + size; j++)
+ printf("%d ", j);
+ return 0;
+ }
+ }
+ printf("Contiguous allocation failed");
+ }
+ else if (choice == 2)
+ {
+ printf("Allocated blocks: ");
+ for (i = 0; i < n && size > 0; i++)
+ {
+ if (disk[i] == 0)
+ {
+ printf("%d ", i);
+ disk[i] = 1;
+size--;
+}
+ }
+ }
+ else if (choice == 3)
+ {
+ printf("Index block: 0\n");
+ printf("Allocated blocks: ");
+ for (i = 1; i <= size; i++)
+ printf("%d ", i);
+ }
+ else
+ printf("Invalid choice");
+ return 0;
+}
+2nd question 
+Bitmap
+#include <stdio.h>
+int main()
+{
+ int n, a[50], request, i, count = 0;
+ printf("Enter number of blocks: ");
+ scanf("%d", &n);
+ printf("Enter bitmap: ");
+ for (i = 0; i < n; i++)
+ scanf("%d", &a[i]);
+ printf("Enter blocks required: ");
+ scanf("%d", &request);
+ for (i = 0; i < n && count < request; i++)
+ {
+ if (a[i] == 0)
+ {
+ a[i] = 1;
+ count++;
+ }
+ }
+ if (count < request)
+ printf("Insufficient space\n");
+ else
+ {
+ printf("Allocation successful\n");
+ printf("Updated bitmap: ");
+ for (i = 0; i < n; i++)
+printf("%d ", a[i]);
+ }
+ return 0;
+}
+3rd question 
+FCFS Disk Scheduling
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+ int a[50], n, head, i, total = 0;
+ printf("Enter number of requests: ");
+ scanf("%d", &n);
+ printf("Enter request queue: ");
+ for (i = 0; i < n; i++)
+ scanf("%d", &a[i]);
+ printf("Enter head position: ");
+ scanf("%d", &head);
+ printf("Seek sequence: %d ", head);
+ for (i = 0; i < n; i++)
+ {
+ total = total + abs(head - a[i]);
+ head = a[i];
+ printf("-> %d ", head);
+ }
+ printf("\nTotal seek time = %d", total);
+ return 0;
+}
+4th question 
+C-SCAN and LOOK
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+ int a[50], n, head, disk, i, total = 0;
+ printf("Enter disk size: ");
+ scanf("%d", &disk);
+ printf("Enter number of requests: ");
+ scanf("%d", &n);
+printf("Enter requests: ");
+ for (i = 0; i < n; i++)
+ scanf("%d", &a[i]);
+ printf("Enter head position: ");
+ scanf("%d", &head);
+ printf("\nLOOK Seek Sequence: %d ", head);
+ for (i = 0; i < n; i++)
+ {
+ total += abs(head - a[i]);
+ head = a[i];
+ printf("-> %d ", head);
+ }
+ printf("\nTotal head movement = %d", total);
+ return 0;
+}
+5th question 
+File Allocation + Disk Scheduling
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+ int n, size, choice, schedule;
+ int block[50], i, head, total = 0;
+ printf("Enter disk size: ");
+ scanf("%d", &n);
+ printf("Enter file size: ");
+ scanf("%d", &size);
+ printf("1. Contiguous\n2. Indexed\n");
+ printf("Enter allocation choice: ");
+ scanf("%d", &choice);
+ printf("Allocated blocks: ");
+ if (choice == 1)
+ {
+ for (i = 0; i < size; i++)
+ {
+ block[i] = i;
+ printf("%d ", block[i]);
+ }
+ }
+ else
+ {
+ printf("\nIndex block = 0\n");
+printf("Data blocks: ");
+ for (i = 0; i < size; i++)
+ {
+ block[i] = i + 1;
+ printf("%d ", block[i]);
+ }
+ }
+ printf("\n1. FCFS\n2. SSTF\n");
+ printf("Enter scheduling choice: ");
+ scanf("%d", &schedule);
+ printf("Enter head position: ");
+ scanf("%d", &head);
+ printf("Seek sequence: %d ", head);
+ /* Simple FCFS scheduling */
+ for (i = 0; i < size; i++)
+ {
+ total += abs(head - block[i]);
+ head = block[i];
+ printf("-> %d ", head);
+ }
+ printf("\nTotal seek time = %d", total);
+ return 0;
+}
