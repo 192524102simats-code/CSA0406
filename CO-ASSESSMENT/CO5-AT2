@@ -1,0 +1,175 @@
+NAME: VARSHA.V
+REG.NO: 192524102
+
+  QNO:1 FilSystem Space Management Algorithm
+Objective: Monitor disk usage and automatically manage log files when disk utilization exceeds 80%.
+Pseudocode:
+BEGIN
+    SET threshold = 80%
+    WHILE system is running DO
+        usage ← GET_DISK_USAGE()
+        IF usage > threshold THEN
+            log_files ← IDENTIFY_LOG_FILES()
+            SORT log_files BY age DESCENDING
+            FOR each file IN log_files DO
+                IF file is old THEN
+                    COMPRESS file
+                END IF
+                usage ← GET_DISK_USAGE()
+                IF usage > threshold THEN
+                    DELETE oldest log file
+                END IF
+                usage ← GET_DISK_USAGE()
+                IF usage <= threshold THEN
+                    BREAK
+                END IF
+            ENDFOR
+        END IF
+        WAIT for monitoring interval
+    END WHILE
+END
+
+WORKING:
+1. The system continuously checks the disk utilization.
+2. If usage is 80% or less, no action is taken.
+3. When usage exceeds 80%, log files are identified and sorted by age.
+4. Older logs are first compressed to save space.
+5. If space is still insufficient, the oldest logs are deleted.
+6. The process stops as soon as disk usage falls back to 80% or below.
+7. Monitoring then continues at regular intervals
+
+
+QNO.2 Priority-Based CPU Scheduling Algorithm
+Objective: Improve CPU efficiency by selecting and executing processes according to their priority. Higher-priority processes are executed first, while incomplete processes are reinserted with slightly reduced priority to prevent starvation.
+BEGIN
+    INPUT process_list
+    FOR each process IN process_list DO
+        ASSIGN priority to process
+    ENDFOR
+    SORT process_list BY priority DESCENDING
+    WHILE process_list IS NOT EMPTY DO
+        SELECT process WITH highest priority
+        ALLOCATE CPU TIME SLICE
+        EXECUTE selected process
+        IF process IS completed THEN
+            REMOVE process FROM process_list
+        ELSE
+            REDUCE priority of selected process slightly
+            ADD process BACK to process_list
+        ENDIF
+        SORT process_list BY priority DESCENDING
+    ENDWHILE
+    DISPLAY "All processes completed"
+END
+
+Working:
+1. The list of processes and their priorities is given as input.
+2. Processes are arranged from **highest to lowest priority**.
+3. The CPU selects the process with the highest priority and executes it for a fixed time slice.
+4. If the process finishes, it is removed from the queue.
+5. If it is not finished, its priority is slightly reduced and it is added back to the queue.
+6. The process list is sorted again, and the CPU continues until all processes are completed.
+
+Advantage: Reducing the priority of repeatedly running processes helps prevent **starvation** of lower-priority processes while maintaining priority-based execution.
+
+QNO.3 RAM Resource Management Algorithm for Multiple VMs
+
+ Objective: Efficiently distribute available RAM among multiple virtual machines while reserving memory for the host system and ensuring each VM receives a minimum amount of RAM.
+
+text
+BEGIN
+    total_RAM = 16 GB
+    host_reserved = 4 GB
+    available_RAM = total_RAM - host_reserved
+    INPUT number_of_VMs
+    min_RAM = 2 GB
+    FOR i = 1 TO number_of_VMs DO
+        IF available_RAM >= min_RAM THEN
+            ALLOCATE min_RAM TO VM[i]
+            available_RAM = available_RAM - min_RAM
+            PRINT "2 GB allocated to VM[i]"
+        ELSE
+            PRINT "Insufficient memory for VM[i]"
+        ENDIF
+    ENDFOR
+    PRINT "Remaining RAM =", available_RAM
+END
+
+Working:
+
+1. The system has **16 GB RAM**, with **4 GB reserved** for the host OS.
+2. Therefore, **12 GB RAM** is available for virtual machines.
+3. Each VM requires a minimum of **2 GB RAM**.
+4. The algorithm allocates 2 GB to each VM as long as sufficient memory is available.
+5. If the remaining RAM is less than 2 GB, the VM cannot be allocated the minimum memory.
+6. The algorithm finally displays the **remaining available RAM**.
+
+Example: With 5 VMs, each VM gets 2 GB, using 10 GB of the available 12 GB, leaving **2 GB RAM** unused.
+
+QNO.4 Hypervisor Selection Algorithm:
+
+Objective: Select the most suitable hypervisor based on performance requirements, budget, and direct hardware access.
+
+text id="7k3mp2"
+BEGIN
+    INPUT performance_required
+    INPUT budget
+    INPUT hardware_access
+    IF performance_required = HIGH AND hardware_access = TRUE THEN
+        selected_hypervisor = "Type 1 Hypervisor"
+    ELSE IF budget = LOW THEN
+        selected_hypervisor = "Type 2 Hypervisor"
+    ELSE
+        selected_hypervisor = "Type 1 Hypervisor"
+    ENDIF
+    PRINT "Selected Hypervisor:", selected_hypervisor
+END
+
+Working:
+
+1. The system first checks the **performance requirement** and **hardware access**.
+2. If high performance and direct hardware access are required, a **Type 1 hypervisor** is selected because it runs directly on the physical hardware.
+3. If the budget is low, a **Type 2 hypervisor** is selected because it is generally easier and less costly to deploy.
+4. In other cases, the algorithm selects a **Type 1 hypervisor** for better performance and resource utilization.
+
+ Justification:
+
+Type 1: Best for servers, data centers, and high-performance environments because it runs directly on hardware.
+Type 2: Suitable for desktops, testing, and development environments where low cost and simplicity are more important.
+ The algorithm balances performance, cost, and hardware access to make the selection.
+
+QNO.5 CPU and Memory Resource-Limiting Algorithm
+Objective:Control CPU and memory usage of applications using **cgroups** so that one application cannot consume excessive system resources.
+
+ text id="6p4xn"
+BEGIN
+    INPUT application_list
+    FOR each app IN application_list DO
+        CREATE cgroup for app
+        SET CPU limit for app
+        SET MEMORY limit for app
+        ASSIGN app process TO cgroup
+        MONITOR CPU and memory usage
+        IF CPU usage exceeds limit THEN
+            THROTTLE CPU usage
+        ENDIF
+        IF memory usage exceeds limit THEN
+            RESTRICT memory usage
+        ENDIF
+    ENDFOR
+    PRINT "Resource limits successfully applied"
+END
+
+Working:
+
+1. The system takes a list of applications as input.
+2. A separate **cgroup** is created for each application.
+3. CPU and memory limits are assigned to each application.
+4. The application's process is placed inside its cgroup.
+5. CPU and memory usage are continuously monitored.
+6. If an application exceeds its limit, CPU usage is throttled or memory usage is restricted.
+7. This prevents a single application from consuming excessive resources and improves overall system performance.
+
+ Example:
+   If an application is given a **30% CPU limit** and **2 GB memory limit**, it cannot continuously consume more than the assigned resources, allowing other applications to run efficiently.
+
