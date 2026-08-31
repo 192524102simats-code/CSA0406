@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+#define N 5
+
+sem_t chopstick[N];
+
+void *philosopher(void *arg)
+{
+    int id = *(int *)arg;
+
+    printf("Philosopher %d is thinking.\n", id + 1);
+    sleep(1);
+
+    // Pick up left chopstick
+    sem_wait(&chopstick[id]);
+
+    // Pick up right chopstick
+    sem_wait(&chopstick[(id + 1) % N]);
+
+    printf("Philosopher %d is eating.\n", id + 1);
+    sleep(2);
+
+    // Put down chopsticks
+    sem_post(&chopstick[id]);
+    sem_post(&chopstick[(id + 1) % N]);
+
+    printf("Philosopher %d finished eating and is thinking again.\n",
+           id + 1);
+
+    return NULL;
+}
+
+int main()
+{
+    pthread_t thread[N];
+    int id[N];
+
+    // Initialize semaphores
+    for (int i = 0; i < N; i++)
+    {
+        sem_init(&chopstick[i], 0, 1);
+        id[i] = i;
+    }
+
+    // Create philosopher threads
+    for (int i = 0; i < N; i++)
+    {
+        pthread_create(&thread[i], NULL, philosopher, &id[i]);
+    }
+
+    // Wait for all philosophers
+    for (int i = 0; i < N; i++)
+    {
+        pthread_join(thread[i], NULL);
+    }
+
+    // Destroy semaphores
+    for (int i = 0; i < N; i++)
+    {
+        sem_destroy(&chopstick[i]);
+    }
+
+    return 0;
+}
