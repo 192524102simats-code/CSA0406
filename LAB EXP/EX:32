@@ -1,0 +1,118 @@
+#include <stdio.h>
+
+int main()
+{
+    int pages[50], frames[10], recent[10];
+    int n, f, i, j, k;
+    int pageFaults = 0, pageHits = 0;
+    int time = 0, pos, least;
+
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+
+    printf("Enter the page reference string:\n");
+    for (i = 0; i < n; i++)
+        scanf("%d", &pages[i]);
+
+    printf("Enter number of frames: ");
+    scanf("%d", &f);
+
+    // Initialize frames and recent usage
+    for (i = 0; i < f; i++)
+    {
+        frames[i] = -1;
+        recent[i] = 0;
+    }
+
+    printf("\nPage\tFrames\t\tStatus\n");
+
+    // LRU Page Replacement
+    for (i = 0; i < n; i++)
+    {
+        int found = 0;
+
+        // Check if page is already in memory
+        for (j = 0; j < f; j++)
+        {
+            if (frames[j] == pages[i])
+            {
+                found = 1;
+                time++;
+                recent[j] = time;
+                break;
+            }
+        }
+
+        // Page hit
+        if (found)
+        {
+            pageHits++;
+            printf("%d\t", pages[i]);
+
+            for (j = 0; j < f; j++)
+            {
+                if (frames[j] == -1)
+                    printf("- ");
+                else
+                    printf("%d ", frames[j]);
+            }
+
+            printf("\tHit\n");
+        }
+        else
+        {
+            // Find an empty frame
+            pos = -1;
+
+            for (j = 0; j < f; j++)
+            {
+                if (frames[j] == -1)
+                {
+                    pos = j;
+                    break;
+                }
+            }
+
+            // If no empty frame, find least recently used frame
+            if (pos == -1)
+            {
+                least = recent[0];
+                pos = 0;
+
+                for (j = 1; j < f; j++)
+                {
+                    if (recent[j] < least)
+                    {
+                        least = recent[j];
+                        pos = j;
+                    }
+                }
+            }
+
+            // Replace the LRU page
+            frames[pos] = pages[i];
+
+            time++;
+            recent[pos] = time;
+
+            pageFaults++;
+
+            printf("%d\t", pages[i]);
+
+            for (j = 0; j < f; j++)
+            {
+                if (frames[j] == -1)
+                    printf("- ");
+                else
+                    printf("%d ", frames[j]);
+            }
+
+            printf("\tPage Fault\n");
+        }
+    }
+
+    printf("\nTotal Page Faults = %d\n", pageFaults);
+    printf("Total Page Hits   = %d\n", pageHits);
+
+    return 0;
+}
