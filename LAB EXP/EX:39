@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int request[50];
+    int n, head, disk_size, i, j, temp;
+    int totalMovement = 0;
+
+    printf("Enter the number of disk requests: ");
+    scanf("%d", &n);
+
+    printf("Enter the disk request sequence:\n");
+    for (i = 0; i < n; i++)
+        scanf("%d", &request[i]);
+
+    printf("Enter the initial head position: ");
+    scanf("%d", &head);
+
+    printf("Enter the disk size: ");
+    scanf("%d", &disk_size);
+
+    /* Sort the request queue */
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (request[j] > request[j + 1])
+            {
+                temp = request[j];
+                request[j] = request[j + 1];
+                request[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("\nC-SCAN Disk Scheduling Sequence:\n");
+    printf("%d", head);
+
+    /* Move towards the right */
+    for (i = 0; i < n; i++)
+    {
+        if (request[i] >= head)
+        {
+            totalMovement += abs(head - request[i]);
+            head = request[i];
+            printf(" -> %d", head);
+        }
+    }
+
+    /* Move to the end of the disk */
+    if (head != disk_size - 1)
+    {
+        totalMovement += abs(head - (disk_size - 1));
+        head = disk_size - 1;
+        printf(" -> %d", head);
+    }
+
+    /* Jump from end to beginning */
+    totalMovement += (disk_size - 1);
+    head = 0;
+    printf(" -> %d", head);
+
+    /* Service remaining requests from beginning */
+    for (i = 0; i < n; i++)
+    {
+        if (request[i] < head)
+        {
+            totalMovement += abs(head - request[i]);
+            head = request[i];
+            printf(" -> %d", head);
+        }
+    }
+
+    printf("\n\nTotal Head Movement = %d cylinders\n",
+           totalMovement);
+
+    printf("Average Head Movement = %.2f cylinders\n",
+           (float)totalMovement / n);
+
+    return 0;
+}
