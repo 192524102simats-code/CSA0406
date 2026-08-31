@@ -1,0 +1,188 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Employee
+{
+    int id;
+    char name[30];
+    float salary;
+};
+
+void addEmployee()
+{
+    FILE *fp;
+    struct Employee emp;
+
+    fp = fopen("employee.dat", "ab");
+
+    if (fp == NULL)
+    {
+        printf("Unable to open file!\n");
+        return;
+    }
+
+    printf("Enter Employee ID: ");
+    scanf("%d", &emp.id);
+
+    printf("Enter Employee Name: ");
+    scanf("%s", emp.name);
+
+    printf("Enter Salary: ");
+    scanf("%f", &emp.salary);
+
+    fwrite(&emp, sizeof(emp), 1, fp);
+
+    fclose(fp);
+
+    printf("Employee record added successfully.\n");
+}
+
+void displayEmployee()
+{
+    FILE *fp;
+    struct Employee emp;
+    int record;
+
+    fp = fopen("employee.dat", "rb");
+
+    if (fp == NULL)
+    {
+        printf("File not found!\n");
+        return;
+    }
+
+    printf("Enter record number to access: ");
+    scanf("%d", &record);
+
+    // Move directly to the required record
+    fseek(fp, (record - 1) * sizeof(emp), SEEK_SET);
+
+    if (fread(&emp, sizeof(emp), 1, fp) == 1)
+    {
+        printf("\nEmployee Details\n");
+        printf("ID     : %d\n", emp.id);
+        printf("Name   : %s\n", emp.name);
+        printf("Salary : %.2f\n", emp.salary);
+    }
+    else
+    {
+        printf("Record not found!\n");
+    }
+
+    fclose(fp);
+}
+
+void modifyEmployee()
+{
+    FILE *fp;
+    struct Employee emp;
+    int record;
+
+    fp = fopen("employee.dat", "rb+");
+
+    if (fp == NULL)
+    {
+        printf("File not found!\n");
+        return;
+    }
+
+    printf("Enter record number to modify: ");
+    scanf("%d", &record);
+
+    fseek(fp, (record - 1) * sizeof(emp), SEEK_SET);
+
+    if (fread(&emp, sizeof(emp), 1, fp) == 1)
+    {
+        printf("Enter new Employee ID: ");
+        scanf("%d", &emp.id);
+
+        printf("Enter new Employee Name: ");
+        scanf("%s", emp.name);
+
+        printf("Enter new Salary: ");
+        scanf("%f", &emp.salary);
+
+        // Move back to the beginning of the record
+        fseek(fp, -(long)sizeof(emp), SEEK_CUR);
+
+        fwrite(&emp, sizeof(emp), 1, fp);
+
+        printf("Employee record modified successfully.\n");
+    }
+    else
+    {
+        printf("Record not found!\n");
+    }
+
+    fclose(fp);
+}
+
+void displayAll()
+{
+    FILE *fp;
+    struct Employee emp;
+
+    fp = fopen("employee.dat", "rb");
+
+    if (fp == NULL)
+    {
+        printf("File not found!\n");
+        return;
+    }
+
+    printf("\nAll Employee Records\n");
+    printf("----------------------------\n");
+
+    while (fread(&emp, sizeof(emp), 1, fp) == 1)
+    {
+        printf("ID: %d | Name: %s | Salary: %.2f\n",
+               emp.id, emp.name, emp.salary);
+    }
+
+    fclose(fp);
+}
+
+int main()
+{
+    int choice;
+
+    while (1)
+    {
+        printf("\n===== Employee File Management =====\n");
+        printf("1. Add Employee\n");
+        printf("2. Random Access Employee\n");
+        printf("3. Modify Employee\n");
+        printf("4. Display All Employees\n");
+        printf("5. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                addEmployee();
+                break;
+
+            case 2:
+                displayEmployee();
+                break;
+
+            case 3:
+                modifyEmployee();
+                break;
+
+            case 4:
+                displayAll();
+                break;
+
+            case 5:
+                exit(0);
+
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
