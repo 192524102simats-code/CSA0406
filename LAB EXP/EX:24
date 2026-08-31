@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+int main()
+{
+    int fd;
+    char buffer[100];
+    char data[] = "Hello! This is a UNIX system call demonstration.";
+
+    // Create and open a file
+    fd = open("sample.txt", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+
+    if (fd < 0)
+    {
+        perror("Error opening file");
+        return 1;
+    }
+
+    printf("File opened successfully.\n");
+
+    // Write data into the file
+    write(fd, data, strlen(data));
+
+    printf("Data written successfully.\n");
+
+    // Close the file
+    close(fd);
+
+    // Reopen the file for reading
+    fd = open("sample.txt", O_RDONLY);
+
+    if (fd < 0)
+    {
+        perror("Error opening file for reading");
+        return 1;
+    }
+
+    // Read data from the file
+    int n = read(fd, buffer, sizeof(buffer) - 1);
+
+    if (n < 0)
+    {
+        perror("Error reading file");
+        close(fd);
+        return 1;
+    }
+
+    buffer[n] = '\0';
+
+    printf("\nData read from file:\n");
+    printf("%s\n", buffer);
+
+    // Close the file
+    close(fd);
+
+    printf("\nFile closed successfully.\n");
+
+    return 0;
+}
