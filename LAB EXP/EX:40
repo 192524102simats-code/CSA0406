@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <sys/stat.h>
+
+int main()
+{
+    struct stat file;
+    char *filename = "sample.txt";
+
+    // Create a sample file
+    FILE *fp = fopen(filename, "w");
+
+    if (fp == NULL)
+    {
+        perror("File creation failed");
+        return 1;
+    }
+
+    fprintf(fp, "Linux File Permission Demonstration\n");
+    fclose(fp);
+
+    // Get file information
+    if (stat(filename, &file) != 0)
+    {
+        perror("stat failed");
+        return 1;
+    }
+
+    printf("File: %s\n\n", filename);
+
+    printf("File Access Permissions:\n");
+
+    printf("Owner : ");
+    printf("%c", (file.st_mode & S_IRUSR) ? 'r' : '-');
+    printf("%c", (file.st_mode & S_IWUSR) ? 'w' : '-');
+    printf("%c\n", (file.st_mode & S_IXUSR) ? 'x' : '-');
+
+    printf("Group : ");
+    printf("%c", (file.st_mode & S_IRGRP) ? 'r' : '-');
+    printf("%c", (file.st_mode & S_IWGRP) ? 'w' : '-');
+    printf("%c\n", (file.st_mode & S_IXGRP) ? 'x' : '-');
+
+    printf("Others: ");
+    printf("%c", (file.st_mode & S_IROTH) ? 'r' : '-');
+    printf("%c", (file.st_mode & S_IWOTH) ? 'w' : '-');
+    printf("%c\n", (file.st_mode & S_IXOTH) ? 'x' : '-');
+
+    printf("\nUser Types:\n");
+    printf("1. Owner - User who owns the file\n");
+    printf("2. Group - Users belonging to the file's group\n");
+    printf("3. Others - All remaining users\n");
+
+    return 0;
+}
