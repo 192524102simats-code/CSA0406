@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+
+void *thread_function(void *arg)
+{
+    printf("Child thread is running.\n");
+
+    printf("Child thread ID: %lu\n",
+           (unsigned long)pthread_self());
+
+    sleep(1);
+
+    printf("Child thread is exiting.\n");
+
+    // Exit the thread
+    pthread_exit(NULL);
+}
+
+int main()
+{
+    pthread_t thread1, thread2;
+
+    // (i) CREATE - Create two threads
+    printf("Creating threads...\n");
+
+    pthread_create(&thread1, NULL, thread_function, NULL);
+    pthread_create(&thread2, NULL, thread_function, NULL);
+
+    printf("Threads created successfully.\n");
+
+    // (iii) EQUAL - Compare thread IDs
+    if (pthread_equal(thread1, thread2))
+        printf("Both threads are equal.\n");
+    else
+        printf("Both threads are different.\n");
+
+    // (ii) JOIN - Wait for threads to complete
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+
+    printf("Both threads have completed.\n");
+
+    return 0;
+}
