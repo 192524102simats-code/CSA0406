@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+
+int counter = 0;
+
+// Declare mutex
+pthread_mutex_t lock;
+
+void *increment(void *arg)
+{
+    int i;
+
+    for (i = 0; i < 5; i++)
+    {
+        // Lock the critical section
+        pthread_mutex_lock(&lock);
+
+        printf("Thread %ld entered critical section\n",
+               (long)pthread_self());
+
+        counter++;
+        printf("Counter = %d\n", counter);
+
+        sleep(1);
+
+        printf("Thread %ld leaving critical section\n\n",
+               (long)pthread_self());
+
+        // Unlock the critical section
+        pthread_mutex_unlock(&lock);
+
+        sleep(1);
+    }
+
+    return NULL;
+}
+
+int main()
+{
+    pthread_t t1, t2;
+
+    // Initialize mutex
+    pthread_mutex_init(&lock, NULL);
+
+    // Create two threads
+    pthread_create(&t1, NULL, increment, NULL);
+    pthread_create(&t2, NULL, increment, NULL);
+
+    // Wait for both threads to finish
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+
+    // Destroy mutex
+    pthread_mutex_destroy(&lock);
+
+    printf("Final Counter Value = %d\n", counter);
+
+    return 0;
+}
